@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <span class="icon"></span>
-    <h1 class="text">Chicken Music</h1>
+    <h1 class="text">Marmot Music</h1>
   </div>
 </template>
 
@@ -17,6 +17,7 @@ export default {
     text-align: center;
     color: $color-theme;
     font-size: 0;
+    background-color: darken($color-background, 6%);
     .icon {
       display: inline-block;
       vertical-align: top;
