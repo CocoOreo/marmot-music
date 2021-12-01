@@ -9164,6 +9164,11 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.nlark.com/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU=
 
+vue3-lazy@^1.0.0-alpha.1:
+  version "1.0.0-alpha.1"
+  resolved "https://registry.npm.taobao.org/vue3-lazy/download/vue3-lazy-1.0.0-alpha.1.tgz#326a56c2ade4430c76b7ac90d33a7fde0af9aaa6"
+  integrity sha1-MmpWwq3kQwx2t6yQ0zp/3gr5qqY=
+
 vue@^3.0.0:
   version "3.2.22"
   resolved "https://registry.npmmirror.com/vue/download/vue-3.2.22.tgz?cache=0&sync_timestamp=1636947969556&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fvue%2Fdownload%2Fvue-3.2.22.tgz#46e4dd89e98cc4b851ae1eb35f00ced413a34bb7"

@@ -47,7 +47,7 @@ export default {
     height: 40px;
     line-height: 40px;
     font-size: $font-size-medium;
-    background-color: darken($color-background, 6%);
+    background-color: $color-darker-background;
     .tab-item {
       flex: 1;
       text-align: center;

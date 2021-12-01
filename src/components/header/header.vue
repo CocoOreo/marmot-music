@@ -17,7 +17,7 @@ export default {
     text-align: center;
     color: $color-theme;
     font-size: 0;
-    background-color: darken($color-background, 6%);
+    background-color: $color-darker-background;
     .icon {
       display: inline-block;
       vertical-align: top;
