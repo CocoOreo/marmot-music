@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" v-loading="loading">
     <scroll class="recommend-content">
       <div>
         <div class="slider-container">
@@ -8,7 +8,7 @@
           </div>
         </div>
         <div class="recommend-list">
-          <h1 class="list-title">Recommend Music List</h1>
+          <h1 class="list-title" v-show="!loading">Recommend Music List</h1>
           <ul>
             <li
             v-for='item in albums'
@@ -45,6 +45,9 @@ export default {
       sliders: [],
       albums: []
     }
+  },
+  computed: {
+    loading () { return !this.sliders.length || !this.albums.length }
   },
   async created () {
     const result = await getRecommend()
