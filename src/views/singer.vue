@@ -1,15 +1,33 @@
 <template>
 <div class="singer">
-    Singer
+  <index-list :data="singerList" v-loading="!singerList.length"></index-list>
 </div>
 </template>
 
 <script>
+import { getSingerList } from '@/service/singer'
+import IndexList from '@/components/index-list/index-list.vue'
 export default {
-  name: 'singer'
+  name: 'singer',
+  data () {
+    return {
+      singerList: []
+    }
+  },
+  async created () {
+    const res = await getSingerList()
+    this.singerList = res.singers
+  },
+  components: { IndexList }
 }
 </script>
 
 <style lang="scss" scoped>
-
+.singer {
+  position: fixed;
+  top: 84px;
+  bottom: 0px;
+  width: 100%;
+  background-color: $color-background;
+}
 </style>

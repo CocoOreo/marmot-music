@@ -13,6 +13,7 @@
     "better-scroll": "^2.4.2",
     "core-js": "^3.6.5",
     "node-sass": "5",
+    "pinyin": "^2.10.2",
     "sass-loader": "10.1.1",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",

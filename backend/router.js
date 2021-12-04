@@ -1,5 +1,6 @@
 const axios = require('axios')
 const getSecuritySign = require('./sign')
+const pinyin = require('pinyin')
 
 const ERR_OK = 0
 const token = 5381
@@ -42,6 +43,7 @@ function post (url, params) {
 
 function registerRouter (app) {
   registerRecommend(app)
+  registerSingerList(app)
 }
 
 function registerRecommend (app) {
@@ -115,6 +117,96 @@ function registerRecommend (app) {
       }
     })
   })
+}
+
+function registerSingerList (app) {
+  app.get('/api/getSingerList', (req, res) => {
+    const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
+    const HOT_NAME = '热'
+
+    const data = JSON.stringify({
+      comm: { ct: 24, cv: 0 },
+      singerList: {
+        module: 'Music.SingerListServer',
+        method: 'get_singer_list',
+        param: { area: -100, sex: -100, genre: -100, index: -100, sin: 0, cur_page: 1 }
+      }
+    })
+
+    const randomKey = getRandomVal('getUCGI')
+    const sign = getSecuritySign(data)
+
+    get(url, {
+      sign,
+      '-': randomKey,
+      data
+    }).then((response) => {
+      const data = response.data
+      if (data.code === ERR_OK) {
+        const singerList = data.singerList.data.singerlist
+
+        const singerMap = {
+          hot: {
+            title: HOT_NAME,
+            list: map(singerList.slice(0, 10))
+          }
+        }
+
+        singerList.forEach((item) => {
+          // Change name to pinyin
+          const p = pinyin(item.singer_name)
+          if (!p || !p.length) {
+            return
+          }
+          const key = p[0][0].slice(0, 1).toUpperCase()
+          if (key) {
+            if (!singerMap[key]) {
+              singerMap[key] = {
+                title: key,
+                list: []
+              }
+            }
+            singerMap[key].list.push(map([item])[0])
+          }
+        })
+
+        const hot = []
+        const letter = []
+
+        for (const key in singerMap) {
+          const item = singerMap[key]
+          if (item.title.match(/[a-zA-Z]/)) {
+            letter.push(item)
+          } else if (item.title === HOT_NAME) {
+            hot.push(item)
+          }
+        }
+        letter.sort((a, b) => {
+          return a.title.charCodeAt(0) - b.title.charCodeAt(0)
+        })
+
+        res.json({
+          code: ERR_OK,
+          result: {
+            singers: hot.concat(letter)
+          }
+        })
+      } else {
+        res.json(data)
+      }
+    })
+  })
+
+  function map (singerList) {
+    return singerList.map((item) => {
+      return {
+        id: item.singer_id,
+        mid: item.singer_mid,
+        name: item.singer_name,
+        pic: item.singer_pic.replace(/\.webp$/, '.jpg').replace('150x150', '800x800')
+      }
+    })
+  }
 }
 
 module.exports = registerRouter

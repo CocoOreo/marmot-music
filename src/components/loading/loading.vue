@@ -27,7 +27,7 @@ export default {
   .loading {
       width: 100%;
       height: 100%;
-      background-color: rgba(255,255,255,1);
+      background-color: $color-background;
     .loading-content {
         position: absolute;
         top: 50%;
