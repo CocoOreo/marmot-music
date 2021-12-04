@@ -17,7 +17,6 @@ export default {
   async created () {
     const res = await getSingerList()
     this.singerList = res.singers
-    console.log(res)
   },
   components: { IndexList }
 }

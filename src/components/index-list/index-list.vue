@@ -3,6 +3,7 @@
   class="index-list"
   :probe-type ="3"
   @scroll="onScroll"
+  ref="scrollRef"
   >
       <ul ref="groupRef">
           <li
@@ -21,11 +22,30 @@
               </ul>
           </li>
       </ul>
-      <div class="fixed"
-      v-show="fixedTitle">
+      <div
+      class="fixed"
+      v-show="fixedTitle"
+      :style="fixedStyle"
+      >
         <div class="fixed-title">
           {{fixedTitle}}
         </div>
+      </div>
+      <div class="short-cut"
+      @touchstart.stop.prevent="onShortcutTouchStart"
+      @touchmove.stop.prevent="onShortcutTouchMove"
+      @touchend.stop.prevent>
+        <ul>
+          <li
+          v-for="(item,index) in shortcutList"
+          :key="item"
+          class="item"
+          :class="{'current': currentIndex === index}"
+          :data-index="index"
+          >
+          {{item}}
+          </li>
+        </ul>
       </div>
   </scroll>
 </template>
@@ -34,6 +54,7 @@
 
 import scroll from '@/components/scroll/scroll.vue'
 import useFixed from './use-fixed'
+import useShortcut from './use-shortcut'
 export default {
   components: { scroll },
   name: 'index-list',
@@ -46,8 +67,19 @@ export default {
     }
   },
   setup (props) {
-    const { groupRef, onScroll, fixedTitle } = useFixed(props)
-    return { groupRef, fixedTitle, onScroll }
+    const { groupRef, fixedStyle, onScroll, fixedTitle, currentIndex } = useFixed(props)
+    const { shortcutList, onShortcutTouchStart, onShortcutTouchMove, scrollRef } = useShortcut(props, groupRef)
+    return {
+      groupRef,
+      fixedStyle,
+      fixedTitle,
+      onScroll,
+      currentIndex,
+      shortcutList,
+      onShortcutTouchStart,
+      onShortcutTouchMove,
+      scrollRef
+    }
   }
 }
 </script>
@@ -100,4 +132,25 @@ export default {
         background: $color-highlight-background;
     }
   }
+  .short-cut {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      padding: 20px 0;
+      border-radius: 10px;
+      text-align: center;
+      background: $color-background-d;
+      font-family: Helvetica;
+      .item {
+        padding: 3px;
+        line-height: 1;
+        color: $color-text-l;
+        font-size: $font-size-small;
+        &.current {
+          color: $color-theme
+        }
+      }
+    }
 </style>
