@@ -44,6 +44,7 @@ function post (url, params) {
 function registerRouter (app) {
   registerRecommend(app)
   registerSingerList(app)
+  registerSingerDetail(app)
 }
 
 function registerRecommend (app) {
@@ -207,6 +208,84 @@ function registerSingerList (app) {
       }
     })
   }
+}
+
+function registerSingerDetail (app) {
+  app.get('/api/getSingerDetail', (req, res) => {
+    const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
+
+    const data = JSON.stringify({
+      comm: { ct: 24, cv: 0 },
+      singerSongList: {
+        method: 'GetSingerSongList',
+        param: { order: 1, singerMid: req.query.mid, begin: 0, num: 100 },
+        module: 'musichall.song_list_server'
+      }
+    })
+
+    const randomKey = getRandomVal('getSingerSong')
+    const sign = getSecuritySign(data)
+
+    get(url, {
+      sign,
+      '-': randomKey,
+      data
+    }).then((response) => {
+      const data = response.data
+      if (data.code === ERR_OK) {
+        const list = data.singerSongList.data.songList
+        const songList = handleSongList(list)
+
+        res.json({
+          code: ERR_OK,
+          result: {
+            songs: songList
+          }
+        })
+      } else {
+        res.json(data)
+      }
+    })
+  })
+}
+
+function handleSongList (list) {
+  const songList = []
+
+  list.forEach((item) => {
+    const info = item.songInfo || item
+    if (info.pay.pay_play !== 0 || !info.interval) {
+      // filter: remove need-pay songs and invalid songs
+      return
+    }
+
+    // Song structure
+    const song = {
+      id: info.id,
+      mid: info.mid,
+      name: info.name,
+      singer: mergeSinger(info.singer),
+      url: '', // Get url in another api (Third Party protection)
+      duration: info.interval,
+      pic: info.album.mid ? `https://y.gtimg.cn/music/photo_new/T002R800x800M000${info.album.mid}.jpg?max_age=2592000` : fallbackPicUrl,
+      album: info.album.name
+    }
+
+    songList.push(song)
+  })
+
+  function mergeSinger (singer) {
+    const ret = []
+    if (!singer) {
+      return ''
+    }
+    singer.forEach((s) => {
+      ret.push(s.name)
+    })
+    return ret.join('/')
+  }
+
+  return songList
 }
 
 module.exports = registerRouter
