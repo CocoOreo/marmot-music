@@ -9,6 +9,13 @@ function getRandomVal (prefix = '') {
   return prefix + (Math.random() + '').replace('0.', '')
 }
 
+function getUid () {
+  const t = (new Date()).getUTCMilliseconds()
+  return '' + Math.round(2147483647 * Math.random()) * t % 1e10
+}
+
+const fallbackPicUrl = 'https://y.gtimg.cn/mediastyle/music_v11/extra/default_300x300.jpg?max_age=31536000'
+
 const commonParams = {
   g_tk: token,
   loginUin: 0,
@@ -45,6 +52,7 @@ function registerRouter (app) {
   registerRecommend(app)
   registerSingerList(app)
   registerSingerDetail(app)
+  registerSongsUrl(app)
 }
 
 function registerRecommend (app) {
@@ -286,6 +294,78 @@ function handleSongList (list) {
   }
 
   return songList
+}
+
+function registerSongsUrl (app) {
+  app.get('/api/getSongsUrl', (req, res) => {
+    const mid = req.query.mid
+
+    let midGroup = []
+    if (mid.length > 100) {
+      const groupLen = Math.ceil(mid.length / 100)
+      for (let i = 0; i < groupLen; i++) {
+        midGroup.push(mid.slice(i * 100, (100 * (i + 1))))
+      }
+    } else {
+      midGroup = [mid]
+    }
+
+    // Store url mid: url
+    const urlMap = {}
+
+    // process returned url
+    function process (mid) {
+      const data = {
+        req_0: {
+          module: 'vkey.GetVkeyServer',
+          method: 'CgiGetVkey',
+          param: {
+            guid: getUid(),
+            songmid: mid,
+            songtype: new Array(mid.length).fill(0),
+            uin: '0',
+            loginflag: 0,
+            platform: '23',
+            h5to: 'speed'
+          }
+        },
+        comm: {
+          g_tk: token,
+          uin: '0',
+          format: 'json',
+          platform: 'h5'
+        }
+      }
+
+      const sign = getSecuritySign(JSON.stringify(data))
+      const url = `https://u.y.qq.com/cgi-bin/musics.fcg?_=${getRandomVal()}&sign=${sign}`
+
+      return post(url, data).then((response) => {
+        const data = response.data
+        if (data.code === ERR_OK) {
+          const midInfo = data.req_0.data.midurlinfo
+          const sip = data.req_0.data.sip
+          const domain = sip[sip.length - 1]
+          midInfo.forEach((info) => {
+            urlMap[info.songmid] = domain + info.purl
+          })
+        }
+      })
+    }
+
+    const requests = midGroup.map((mid) => {
+      return process(mid)
+    })
+
+    return Promise.all(requests).then(() => {
+      res.json({
+        code: ERR_OK,
+        result: {
+          map: urlMap
+        }
+      })
+    })
+  })
 }
 
 module.exports = registerRouter

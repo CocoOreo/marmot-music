@@ -23,7 +23,6 @@ export default {
   methods: {
     handleSelect (singer) {
       this.selectedSinger = singer
-      console.log(this.$router)
       this.$router.push(
         {
           path: `/singer/${singer.mid}`
