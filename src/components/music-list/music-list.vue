@@ -1,6 +1,9 @@
 <template>
   <div class="music-list">
-        <div class="back">
+        <div
+        class="back"
+        @click="goBack">
+          <div class="icon-back"></div>
         </div>
         <h1 class="title">{{title}}</h1>
         <div
@@ -10,7 +13,11 @@
         </div>
         <scroll
           class="list"
-          :style="scrollStyle">
+          :style="scrollStyle"
+          v-loading="loading"
+          :probe-type="3"
+          @scroll="onScroll"
+          >
             <div class="song-list-container">
               <song-list :songs="songs"></song-list>
             </div>
@@ -21,12 +28,15 @@
 <script>
 import scroll from '../scroll/scroll.vue'
 import SongList from '../song-list/song-list.vue'
+
+const RESERVED_HEIGHT = 40
 export default {
   components: { scroll, SongList },
   props: {
     title: String,
     pic: String,
     rank: Boolean,
+    loading: Boolean,
     songs: {
       type: Array,
       default () {
@@ -36,12 +46,28 @@ export default {
   },
   data () {
     return {
-      imageHeight: 0
+      imageHeight: 0,
+      scrollY: 0,
+      maxTranslate: 0
     }
   },
   computed: {
     bgImageStyle () {
+      const scrollY = this.scrollY
+      let zIndex = 0
+      let height = 0
+      let paddingTop = '70%'
+
+      if (scrollY > this.maxTranslate) {
+        zIndex = 10
+        height = `${RESERVED_HEIGHT}px`
+        paddingTop = 0
+      }
+
       return {
+        height,
+        paddingTop,
+        zIndex,
         backgroundImage: `url(${this.pic})`
       }
     },
@@ -53,6 +79,15 @@ export default {
   },
   mounted () {
     this.imageHeight = this.$refs.bgImage.clientHeight
+    this.maxTranslate = this.imageHeight - RESERVED_HEIGHT
+  },
+  methods: {
+    goBack () {
+      this.$router.back()
+    },
+    onScroll (pos) {
+      this.scrollY = -pos.y
+    }
   }
 }
 </script>
@@ -66,12 +101,16 @@ export default {
       top: 0;
       left: 6px;
       z-index: 20;
+      display: flex;
+      flex: 0 0 20px;
+      align-items: center;
       transform: translateZ(2px);
+      padding: 10px;
       .icon-back {
-        display: block;
-        padding: 10px;
-        font-size: $font-size-large-x;
-        color: $color-theme;
+        @include bg-image('back');
+        width: 20px;
+        height: 20px;
+        background-size: cover;
       }
     }
     .title {
@@ -91,7 +130,6 @@ export default {
       width: 100%;
       transform-origin: top;
       background-size: cover;
-      padding-top: 70%;
       .play-btn-wrapper {
         position: absolute;
         bottom: 20px;

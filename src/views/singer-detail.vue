@@ -4,6 +4,7 @@
     :songs="songs"
     :title="this.title"
     :pic="pic"
+    :loading="loading"
     ></music-list>
   </div>
 </template>
@@ -22,13 +23,15 @@ export default {
   },
   data () {
     return {
-      songs: []
+      songs: [],
+      loading: true
     }
   },
   async created () {
     const res = await getSingerDetail(this.singer)
     const songs = await processSongs(res.songs)
     this.songs = songs
+    this.loading = false
   },
   computed: {
     pic () {

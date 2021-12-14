@@ -27,7 +27,14 @@ export default {
       default () {
         return []
       }
+    },
+    rank: {
+      type: Boolean,
+      default () {
+        return false
+      }
     }
+
   },
   emits: ['select'],
   methods: {
@@ -64,25 +71,31 @@ export default {
     height: 64px;
     font-size: $font-size-medium;
   }
-  .icon {
-    display: inline-block;
-    width: 22px;
-    height: 20px;
-    background-size: 22px 20px;
-          &.icon0 {
-            @include bg-image('first');
-          }
-          &.icon1 {
-            @include bg-image('second');
-          }
-          &.icon2 {
-            @include bg-image('third');
-          }
-        }
-        .text {
-          color: $color-theme;
-          font-size: $font-size-large;
+  .rank{
+    display: flex;
+    flex: 0 0 18px;
+    margin-right: 16px;
+    align-items: center;
+    .icon {
+      display: inline-block;
+      width: 18px;
+      height: 16px;
+      background-size: 18px 16px;
+            &.icon0 {
+              @include bg-image('first');
+            }
+            &.icon1 {
+              @include bg-image('second');
+            }
+            &.icon2 {
+              @include bg-image('third');
+            }
     }
+    .text {
+            color: $color-theme;
+            font-size: $font-size-large;
+    }
+   }
   }
   .content {
     flex: 1;
