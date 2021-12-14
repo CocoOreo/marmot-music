@@ -4,4 +4,8 @@ const getSingerList = () => {
   return get('/api/getSingerList')
 }
 
-export { getSingerList }
+const getSingerDetail = (singer) => {
+  return get('/api/getSingerDetail', { mid: singer.mid })
+}
+
+export { getSingerList, getSingerDetail }

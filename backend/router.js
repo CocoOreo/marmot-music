@@ -9,6 +9,13 @@ function getRandomVal (prefix = '') {
   return prefix + (Math.random() + '').replace('0.', '')
 }
 
+function getUid () {
+  const t = (new Date()).getUTCMilliseconds()
+  return '' + Math.round(2147483647 * Math.random()) * t % 1e10
+}
+
+const fallbackPicUrl = 'https://y.gtimg.cn/mediastyle/music_v11/extra/default_300x300.jpg?max_age=31536000'
+
 const commonParams = {
   g_tk: token,
   loginUin: 0,
@@ -44,6 +51,8 @@ function post (url, params) {
 function registerRouter (app) {
   registerRecommend(app)
   registerSingerList(app)
+  registerSingerDetail(app)
+  registerSongsUrl(app)
 }
 
 function registerRecommend (app) {
@@ -207,6 +216,156 @@ function registerSingerList (app) {
       }
     })
   }
+}
+
+function registerSingerDetail (app) {
+  app.get('/api/getSingerDetail', (req, res) => {
+    const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
+
+    const data = JSON.stringify({
+      comm: { ct: 24, cv: 0 },
+      singerSongList: {
+        method: 'GetSingerSongList',
+        param: { order: 1, singerMid: req.query.mid, begin: 0, num: 100 },
+        module: 'musichall.song_list_server'
+      }
+    })
+
+    const randomKey = getRandomVal('getSingerSong')
+    const sign = getSecuritySign(data)
+
+    get(url, {
+      sign,
+      '-': randomKey,
+      data
+    }).then((response) => {
+      const data = response.data
+      if (data.code === ERR_OK) {
+        const list = data.singerSongList.data.songList
+        const songList = handleSongList(list)
+
+        res.json({
+          code: ERR_OK,
+          result: {
+            songs: songList
+          }
+        })
+      } else {
+        res.json(data)
+      }
+    })
+  })
+}
+
+function handleSongList (list) {
+  const songList = []
+
+  list.forEach((item) => {
+    const info = item.songInfo || item
+    if (info.pay.pay_play !== 0 || !info.interval) {
+      // filter: remove need-pay songs and invalid songs
+      return
+    }
+
+    // Song structure
+    const song = {
+      id: info.id,
+      mid: info.mid,
+      name: info.name,
+      singer: mergeSinger(info.singer),
+      url: '', // Get url in another api (Third Party protection)
+      duration: info.interval,
+      pic: info.album.mid ? `https://y.gtimg.cn/music/photo_new/T002R800x800M000${info.album.mid}.jpg?max_age=2592000` : fallbackPicUrl,
+      album: info.album.name
+    }
+
+    songList.push(song)
+  })
+
+  function mergeSinger (singer) {
+    const ret = []
+    if (!singer) {
+      return ''
+    }
+    singer.forEach((s) => {
+      ret.push(s.name)
+    })
+    return ret.join('/')
+  }
+
+  return songList
+}
+
+function registerSongsUrl (app) {
+  app.get('/api/getSongsUrl', (req, res) => {
+    const mid = req.query.mid
+
+    let midGroup = []
+    if (mid.length > 100) {
+      const groupLen = Math.ceil(mid.length / 100)
+      for (let i = 0; i < groupLen; i++) {
+        midGroup.push(mid.slice(i * 100, (100 * (i + 1))))
+      }
+    } else {
+      midGroup = [mid]
+    }
+
+    // Store url mid: url
+    const urlMap = {}
+
+    // process returned url
+    function process (mid) {
+      const data = {
+        req_0: {
+          module: 'vkey.GetVkeyServer',
+          method: 'CgiGetVkey',
+          param: {
+            guid: getUid(),
+            songmid: mid,
+            songtype: new Array(mid.length).fill(0),
+            uin: '0',
+            loginflag: 0,
+            platform: '23',
+            h5to: 'speed'
+          }
+        },
+        comm: {
+          g_tk: token,
+          uin: '0',
+          format: 'json',
+          platform: 'h5'
+        }
+      }
+
+      const sign = getSecuritySign(JSON.stringify(data))
+      const url = `https://u.y.qq.com/cgi-bin/musics.fcg?_=${getRandomVal()}&sign=${sign}`
+
+      return post(url, data).then((response) => {
+        const data = response.data
+        if (data.code === ERR_OK) {
+          const midInfo = data.req_0.data.midurlinfo
+          const sip = data.req_0.data.sip
+          const domain = sip[sip.length - 1]
+          midInfo.forEach((info) => {
+            urlMap[info.songmid] = domain + info.purl
+          })
+        }
+      })
+    }
+
+    const requests = midGroup.map((mid) => {
+      return process(mid)
+    })
+
+    return Promise.all(requests).then(() => {
+      res.json({
+        code: ERR_OK,
+        result: {
+          map: urlMap
+        }
+      })
+    })
+  })
 }
 
 module.exports = registerRouter
