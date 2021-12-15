@@ -10,6 +10,7 @@
         class="bg-image"
         :style="bgImageStyle"
         ref="bgImage">
+          <div class="filter" :style="filterStyle"></div>
         </div>
         <scroll
           class="list"
@@ -57,23 +58,42 @@ export default {
       let zIndex = 0
       let height = 0
       let paddingTop = '70%'
+      let translateZ = 0
 
       if (scrollY > this.maxTranslate) {
         zIndex = 10
         height = `${RESERVED_HEIGHT}px`
         paddingTop = 0
+        translateZ = 1
+      }
+
+      let scale = 1
+      if (scrollY <= 0) {
+        scale = 1 + Math.abs((scrollY / this.imageHeight))
       }
 
       return {
         height,
         paddingTop,
         zIndex,
-        backgroundImage: `url(${this.pic})`
+        backgroundImage: `url(${this.pic})`,
+        transform: `scale(${scale}) translateZ(${translateZ})`
       }
     },
     scrollStyle () {
       return {
         top: `${this.imageHeight}px`
+      }
+    },
+    filterStyle () {
+      const scrollY = this.scrollY
+      const imageHeight = this.imageHeight
+      let blur = 0
+      if (scrollY >= 0) {
+        blur = Math.min((this.maxTranslate / imageHeight), scrollY / imageHeight) * 20
+      }
+      return {
+        backdropFilter: `blur(${blur}px)`
       }
     }
   },
