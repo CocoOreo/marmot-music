@@ -12,6 +12,8 @@
 <script>
 import { getSingerDetail } from '@/service/singer'
 import { processSongs } from '@/service/song'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
 import MusicList from '@/components/music-list/music-list.vue'
 export default {
   components: { MusicList },
@@ -28,17 +30,38 @@ export default {
     }
   },
   async created () {
-    const res = await getSingerDetail(this.singer)
+    if (!this.computedSinger) {
+      console.log(this.$route)
+      const path = this.$route.matched[0].path
+      this.$router.push({ path })
+      return
+    }
+    const res = await getSingerDetail(this.computedSinger)
     const songs = await processSongs(res.songs)
     this.songs = songs
     this.loading = false
   },
   computed: {
+    computedSinger () {
+      let res = null
+      const singer = this.singer
+      if (singer) {
+        res = singer
+      } else {
+        const cachedSinger = storage.session.get(SINGER_KEY)
+        if (cachedSinger && cachedSinger.mid === this.$route.params.id) {
+          res = cachedSinger
+        }
+      }
+      return res
+    },
     pic () {
-      return this.singer && this.singer.pic
+      const singer = this.computedSinger
+      return singer && singer.pic
     },
     title () {
-      return this.singer && this.singer.name
+      const singer = this.computedSinger
+      return singer && singer.name
     }
   }
 }
