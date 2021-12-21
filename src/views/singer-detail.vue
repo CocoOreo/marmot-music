@@ -31,7 +31,6 @@ export default {
   },
   async created () {
     if (!this.computedSinger) {
-      console.log(this.$route)
       const path = this.$route.matched[0].path
       this.$router.push({ path })
       return
