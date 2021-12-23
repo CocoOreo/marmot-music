@@ -6,7 +6,7 @@ const mutations = {
     state.setPlayingState = list
   },
   setPlaylist (state, list) {
-    state.playlist = list
+    state.playList = list
   },
   setPlayMode (state, mode) {
     state.playMode = mode
