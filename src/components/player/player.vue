@@ -37,7 +37,9 @@
 		</div>
 	</div>
 	<audio ref="audioRef"
-				 @pause="pause"></audio>
+				 @pause="pause"
+				 @canplay="ready"
+				 @error="error"></audio>
 </template>
 
 <script>
@@ -47,32 +49,49 @@
 		name: 'player',
 		setup() {
 			const store = useStore()
+
+			const songReady = ref(false)
+			const audioRef = ref(null)
 			const fullScreen = computed(() => store.state.fullScreen)
 			const currentSong = computed(() => store.getters.currentSong)
-			const audioRef = ref(null)
 			const playing = computed(() => store.state.playing)
 			const playIcon = computed(() => {
 				return playing.value ? 'icon-pause' : 'icon-play'
 			})
 			const currentIndex = computed(() => store.state.currentIndex)
 			const playList = computed(() => store.state.playList)
+			const disableCls = computed(() => (songReady.value ? '' : 'disable'))
+
 			watch(currentSong, (newSong) => {
 				if (!newSong.id || !newSong.url) {
 					return
 				}
+				songReady.value = false
 				const audioEl = audioRef.value
 				audioEl.src = newSong.url
 				audioEl.play()
 			})
 			watch(playing, (newState) => {
+				if (!songReady.value) {
+					return
+				}
 				const audioEl = audioRef.value
 				newState ? audioEl.play() : audioEl.pause()
 			})
 
+			const ready = () => {
+				if (songReady.value) {
+					return
+				}
+				songReady.value = true
+			}
 			const goBack = () => {
 				store.commit('setFullScreen', false)
 			}
 			const togglePlay = () => {
+				if (!songReady.value) {
+					return
+				}
 				store.commit('setPlayingState', !playing.value)
 			}
 			const pause = () => {
@@ -83,10 +102,13 @@
 				audioEl.currentTime = 0
 				audioEl.play()
 			}
+			const error = () => {
+				songReady.value = true
+			}
 
 			const prev = () => {
 				const list = playList.value
-				if (!list.length) {
+				if (!songReady.value || !list.length) {
 					return
 				}
 				if (list.length === 1) {
@@ -106,7 +128,7 @@
 
 			const next = () => {
 				const list = playList.value
-				if (!list.length) {
+				if (!songReady.value || !list.length) {
 					return
 				}
 				if (list.length === 1) {
@@ -133,7 +155,10 @@
 				togglePlay,
 				pause,
 				prev,
-				next
+				next,
+				ready,
+				disableCls,
+				error
 			}
 		}
 	}
