@@ -4,7 +4,7 @@ export const processSongs = (songs) => {
     return Promise.resolve(songs)
   }
 
-  return get('/api/getSongsUrl', {
+  return get('/api/getBackUpSongsUrl', {
     mid: songs.map((song) => {
       return song.mid
     })
@@ -18,3 +18,4 @@ export const processSongs = (songs) => {
     })
   })
 }
+

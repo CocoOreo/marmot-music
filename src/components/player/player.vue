@@ -16,6 +16,10 @@
 				</div>
 				<div class="bottom">
 					<div class="operators">
+						<div class="icon i-left">
+							<i @click="changeMode"
+								 :class="modeIcon"></i>
+						</div>
 						<div class="icon i-left"
 								 :class="disableCls">
 							<i @click="prev"
@@ -45,10 +49,12 @@
 <script>
 	import { computed, ref, watch } from 'vue'
 	import { useStore } from 'vuex'
+	import useMode from './use-mode'
 	export default {
 		name: 'player',
 		setup() {
 			const store = useStore()
+			const { modeIcon, changeMode } = useMode()
 
 			const songReady = ref(false)
 			const audioRef = ref(null)
@@ -158,7 +164,9 @@
 				next,
 				ready,
 				disableCls,
-				error
+				error,
+				modeIcon,
+				changeMode
 			}
 		}
 	}
