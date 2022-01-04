@@ -35,6 +35,10 @@
 							<i @click="next"
 								 class="icon-next"></i>
 						</div>
+						<div class="icon i-right">
+							<i @click="toggleFavorite(currentSong)"
+								 :class="getFavoriteIcon(currentSong)"></i>
+						</div>
 					</div>
 				</div>
 			</template>
@@ -50,11 +54,13 @@
 	import { computed, ref, watch } from 'vue'
 	import { useStore } from 'vuex'
 	import useMode from './use-mode'
+	import useFavorite from './use-favorite'
 	export default {
 		name: 'player',
 		setup() {
 			const store = useStore()
 			const { modeIcon, changeMode } = useMode()
+			const { toggleFavorite, getFavoriteIcon } = useFavorite()
 
 			const songReady = ref(false)
 			const audioRef = ref(null)
@@ -166,7 +172,9 @@
 				disableCls,
 				error,
 				modeIcon,
-				changeMode
+				changeMode,
+				toggleFavorite,
+				getFavoriteIcon
 			}
 		}
 	}
