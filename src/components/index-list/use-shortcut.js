@@ -21,7 +21,6 @@ const useShortcut = (props, groupRef) => {
   }
 
   const onShortcutTouchStart = (e) => {
-    console.log('hello')
     touch.y1 = e.touches[0].pageY
     const anchorIndex = parseInt(e.target.dataset.index)
     touch.anchorIndex = anchorIndex

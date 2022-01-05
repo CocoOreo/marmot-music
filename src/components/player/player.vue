@@ -15,6 +15,14 @@
 					<h2 class="subtitle">{{currentSong.singer}}</h2>
 				</div>
 				<div class="bottom">
+					<div class="progress-wrapper">
+						<span class="time time-l">{{formatTime(currentTime)}}</span>
+						<div class="progress-bar-wrapper">
+							<progress-bar ref="barRef"
+														:progress="progress"></progress-bar>
+						</div>
+						<span class="time time-r">{{formatTime(currentSong.duration)}}</span>
+					</div>
 					<div class="operators">
 						<div class="icon i-left">
 							<i @click="changeMode"
@@ -47,7 +55,8 @@
 	<audio ref="audioRef"
 				 @pause="pause"
 				 @canplay="ready"
-				 @error="error"></audio>
+				 @error="error"
+				 @timeupdate="updateTime"></audio>
 </template>
 
 <script>
@@ -55,8 +64,13 @@
 	import { useStore } from 'vuex'
 	import useMode from './use-mode'
 	import useFavorite from './use-favorite'
+	import { formatTime } from '@/assets/js/utils'
+	import ProgressBar from './progress-bar.vue'
 	export default {
 		name: 'player',
+		components: {
+			ProgressBar
+		},
 		setup() {
 			const store = useStore()
 			const { modeIcon, changeMode } = useMode()
@@ -64,6 +78,8 @@
 
 			const songReady = ref(false)
 			const audioRef = ref(null)
+			const currentTime = ref(0)
+
 			const fullScreen = computed(() => store.state.fullScreen)
 			const currentSong = computed(() => store.getters.currentSong)
 			const playing = computed(() => store.state.playing)
@@ -73,11 +89,15 @@
 			const currentIndex = computed(() => store.state.currentIndex)
 			const playList = computed(() => store.state.playList)
 			const disableCls = computed(() => (songReady.value ? '' : 'disable'))
+			const progress = computed(
+				() => currentTime.value / currentSong.value.duration
+			)
 
 			watch(currentSong, (newSong) => {
 				if (!newSong.id || !newSong.url) {
 					return
 				}
+				currentTime.value = 0
 				songReady.value = false
 				const audioEl = audioRef.value
 				audioEl.src = newSong.url
@@ -158,6 +178,11 @@
 				}
 			}
 
+			// Update the song play time
+			const updateTime = (e) => {
+				currentTime.value = e.target.currentTime
+			}
+
 			return {
 				fullScreen,
 				currentSong,
@@ -174,7 +199,11 @@
 				modeIcon,
 				changeMode,
 				toggleFavorite,
-				getFavoriteIcon
+				getFavoriteIcon,
+				updateTime,
+				currentTime,
+				formatTime,
+				progress
 			}
 		}
 	}
@@ -245,6 +274,29 @@
 				position: absolute;
 				bottom: 50px;
 				width: 100%;
+				.progress-wrapper {
+					display: flex;
+					align-items: center;
+					width: 80%;
+					margin: 0px auto;
+					padding: 10px 0;
+					.time {
+						color: $color-text;
+						font-size: $font-size-small;
+						flex: 0 0 40px;
+						line-height: 30px;
+						width: 40px;
+						&.time-l {
+							text-align: left;
+						}
+						&.time-r {
+							text-align: right;
+						}
+					}
+					.progress-bar-wrapper {
+						flex: 1;
+					}
+				}
 				.operators {
 					display: flex;
 					align-items: center;

@@ -14,3 +14,10 @@ const getRandomInt = (max) => {
 const swap = (arr, i, j) => {
   [arr[j], arr[i]] = [arr[i], arr[j]]
 }
+
+export const formatTime = (interval) => {
+  interval = Math.floor(interval)
+  const minute = String(Math.floor(interval / 60)).padStart(2,'0')
+  const second = String(interval % 60).padStart(2,'0')
+  return `${minute}:${second}`
+}
