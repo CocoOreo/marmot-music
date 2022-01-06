@@ -7,7 +7,6 @@ const useFavorite = () => {
   const store = useStore()
   const favoriteList = computed(()=> store.state.favoriteList)
   const getFavoriteIcon = (song) => {
-    console.log(song)
     if(isFavorite(song)){
       return 'icon-favorite'
     }
@@ -29,7 +28,6 @@ const useFavorite = () => {
     } else {
       // save
       list = save(song, FAVORITE_KEY, (item)=> item.id === song.id, maxLen)
-      console.log(list)
     }
     store.commit('setFavoriteList', list)
   }

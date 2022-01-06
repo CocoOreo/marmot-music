@@ -14,12 +14,27 @@
 					<h1 class="title">{{currentSong.name}}</h1>
 					<h2 class="subtitle">{{currentSong.singer}}</h2>
 				</div>
+				<div class="middle">
+					<div class="middle-l">
+						<div class="cd-wrapper">
+							<div ref="cdRef"
+									 class="cd">
+								<img :src="currentSong.pic"
+										 :class="imgCls"
+										 ref="cdImageRef"
+										 class="image" />
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="bottom">
 					<div class="progress-wrapper">
 						<span class="time time-l">{{formatTime(currentTime)}}</span>
 						<div class="progress-bar-wrapper">
 							<progress-bar ref="barRef"
-														:progress="progress"></progress-bar>
+														:progress="progress"
+														@progress-changing="onProgressChanging"
+														@progress-changed="onProgressChanged"></progress-bar>
 						</div>
 						<span class="time time-r">{{formatTime(currentSong.duration)}}</span>
 					</div>
@@ -56,7 +71,8 @@
 				 @pause="pause"
 				 @canplay="ready"
 				 @error="error"
-				 @timeupdate="updateTime"></audio>
+				 @timeupdate="updateTime"
+				 @ended="end"></audio>
 </template>
 
 <script>
@@ -64,8 +80,11 @@
 	import { useStore } from 'vuex'
 	import useMode from './use-mode'
 	import useFavorite from './use-favorite'
+	import useCd from './use-cd'
 	import { formatTime } from '@/assets/js/utils'
 	import ProgressBar from './progress-bar.vue'
+	import { PLAY_MODE } from '@/assets/js/constant'
+
 	export default {
 		name: 'player',
 		components: {
@@ -75,10 +94,12 @@
 			const store = useStore()
 			const { modeIcon, changeMode } = useMode()
 			const { toggleFavorite, getFavoriteIcon } = useFavorite()
+			const { cdRef, cdImageRef, imgCls } = useCd()
 
 			const songReady = ref(false)
 			const audioRef = ref(null)
 			const currentTime = ref(0)
+			let progressChanging = false
 
 			const fullScreen = computed(() => store.state.fullScreen)
 			const currentSong = computed(() => store.getters.currentSong)
@@ -92,6 +113,9 @@
 			const progress = computed(
 				() => currentTime.value / currentSong.value.duration
 			)
+			const playMode = computed(() => {
+				return store.state.playMode
+			})
 
 			watch(currentSong, (newSong) => {
 				if (!newSong.id || !newSong.url) {
@@ -133,9 +157,17 @@
 				const audioEl = audioRef.value
 				audioEl.currentTime = 0
 				audioEl.play()
+				store.commit('setPlayingState', true)
 			}
 			const error = () => {
 				songReady.value = true
+			}
+			const end = () => {
+				if (playMode.value === PLAY_MODE.loop) {
+					loop()
+				} else {
+					next()
+				}
 			}
 
 			const prev = () => {
@@ -180,7 +212,21 @@
 
 			// Update the song play time
 			const updateTime = (e) => {
-				currentTime.value = e.target.currentTime
+				if (!progressChanging) {
+					currentTime.value = e.target.currentTime
+				}
+			}
+			const onProgressChanging = (progress) => {
+				progressChanging = true
+				currentTime.value = currentSong.value.duration * progress
+			}
+			const onProgressChanged = (progress) => {
+				progressChanging = false
+				currentTime.value = currentSong.value.duration * progress
+				audioRef.value.currentTime = currentSong.value.duration * progress
+				if (!playing.value) {
+					store.commit('setPlayingState', true)
+				}
 			}
 
 			return {
@@ -203,7 +249,13 @@
 				updateTime,
 				currentTime,
 				formatTime,
-				progress
+				progress,
+				onProgressChanging,
+				onProgressChanged,
+				end,
+				imgCls,
+				cdRef,
+				cdImageRef
 			}
 		}
 	}
@@ -268,6 +320,46 @@
 					text-align: center;
 					font-size: $font-size-medium;
 					color: $color-text;
+				}
+			}
+			.middle {
+				position: fixed;
+				width: 100%;
+				top: 100px;
+				bottom: 160px;
+				.middle-l {
+					display: inline-block;
+					position: relative;
+					width: 100%;
+					height: 0;
+					padding-top: 70%;
+					/* padding based on width */
+					/* so padding 80% means the cd-wrapper will get a height = 70% width */
+					.cd-wrapper {
+						position: absolute;
+						left: 15%;
+						top: 0;
+						width: 70%;
+						height: 100%;
+						.cd {
+							width: 100%;
+							height: 100%;
+							border-radius: 50%;
+							img {
+								position: absolute;
+								left: 0;
+								top: 0;
+								width: 100%;
+								height: 100%;
+								border-radius: 50%;
+								box-sizing: border-box;
+								border: 10px solid rgba(255, 255, 255, 0.1);
+							}
+							.playing {
+								animation: rotate 24s infinite linear;
+							}
+						}
+					}
 				}
 			}
 			.bottom {

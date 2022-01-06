@@ -6,7 +6,6 @@ const insertArray = (arr, val,compare, maxLen) => {
       if(index > -1){
         return
       }
-      console.log('SAVE')
       arr.unshift(val)
       if(maxLen && arr.length > maxLen){
         arr.pop()
