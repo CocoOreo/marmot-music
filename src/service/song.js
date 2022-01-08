@@ -19,3 +19,21 @@ export const processSongs = (songs) => {
   })
 }
 
+const lyricMap = {}
+
+export const getLyric = (song) => {
+  const mid = song.mid
+  const lyric = lyricMap[mid]
+  console.log("call lyric")
+  if(lyric){
+    return Promise.resolve(lyric)
+  }
+
+  return get('/api/getLyric', {
+    mid
+  }).then((res) => {
+    const lyric = res ? res.lyric : '[00:00:00]Lyrics not showing'
+    lyricMap[mid] = lyric
+    return lyric
+  })
+}

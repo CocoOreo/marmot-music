@@ -26,6 +26,24 @@
 							</div>
 						</div>
 					</div>
+					<scroll class="middle-r"
+									ref="lyricScrollRef">
+						<div class="lyric-wrapper">
+							<div v-if="currentLyric"
+									 ref="lyricListRef">
+								<p class="text"
+									 :class="{'current': currentLineNum ===index}"
+									 v-for="(line,index) in currentLyric.lines"
+									 :key="line.num">
+									{{line.txt}}
+								</p>
+							</div>
+							<div class="pure-music"
+									 v-show="pureMusicLyric">
+								<p>{{pureMusicLyric}}</p>
+							</div>
+						</div>
+					</scroll>
 				</div>
 				<div class="bottom">
 					<div class="progress-wrapper">
@@ -81,26 +99,26 @@
 	import useMode from './use-mode'
 	import useFavorite from './use-favorite'
 	import useCd from './use-cd'
+	import useLyric from './use-lyric'
 	import { formatTime } from '@/assets/js/utils'
 	import ProgressBar from './progress-bar.vue'
 	import { PLAY_MODE } from '@/assets/js/constant'
+	import Scroll from '@/components/scroll/scroll.vue'
 
 	export default {
 		name: 'player',
 		components: {
-			ProgressBar
+			ProgressBar,
+			Scroll
 		},
 		setup() {
-			const store = useStore()
-			const { modeIcon, changeMode } = useMode()
-			const { toggleFavorite, getFavoriteIcon } = useFavorite()
-			const { cdRef, cdImageRef, imgCls } = useCd()
-
+			// data
 			const songReady = ref(false)
 			const audioRef = ref(null)
 			const currentTime = ref(0)
 			let progressChanging = false
 
+			const store = useStore()
 			const fullScreen = computed(() => store.state.fullScreen)
 			const currentSong = computed(() => store.getters.currentSong)
 			const playing = computed(() => store.state.playing)
@@ -132,7 +150,29 @@
 					return
 				}
 				const audioEl = audioRef.value
-				newState ? audioEl.play() : audioEl.pause()
+				if (newState) {
+					audioEl.play()
+				} else {
+					audioEl.pause()
+					stopLyric()
+				}
+			})
+
+			const { modeIcon, changeMode } = useMode()
+			const { toggleFavorite, getFavoriteIcon } = useFavorite()
+			const { cdRef, cdImageRef, imgCls } = useCd()
+			const {
+				currentLyric,
+				currentLineNum,
+				playLyric,
+				lyricListRef,
+				lyricScrollRef,
+				playingLyric,
+				pureMusicLyric,
+				stopLyric
+			} = useLyric({
+				songReady,
+				currentTime
 			})
 
 			const ready = () => {
@@ -140,6 +180,7 @@
 					return
 				}
 				songReady.value = true
+				playLyric()
 			}
 			const goBack = () => {
 				store.commit('setFullScreen', false)
@@ -219,6 +260,8 @@
 			const onProgressChanging = (progress) => {
 				progressChanging = true
 				currentTime.value = currentSong.value.duration * progress
+				playLyric()
+				stopLyric()
 			}
 			const onProgressChanged = (progress) => {
 				progressChanging = false
@@ -227,12 +270,14 @@
 				if (!playing.value) {
 					store.commit('setPlayingState', true)
 				}
+				playLyric()
 			}
 
 			return {
 				fullScreen,
 				currentSong,
 				audioRef,
+				// operators
 				goBack,
 				playIcon,
 				togglePlay,
@@ -246,6 +291,7 @@
 				changeMode,
 				toggleFavorite,
 				getFavoriteIcon,
+				// progress-bar
 				updateTime,
 				currentTime,
 				formatTime,
@@ -253,9 +299,17 @@
 				onProgressChanging,
 				onProgressChanged,
 				end,
+				// cd
 				imgCls,
 				cdRef,
-				cdImageRef
+				cdImageRef,
+				// lyric
+				currentLyric,
+				currentLineNum,
+				lyricScrollRef,
+				lyricListRef,
+				playingLyric,
+				pureMusicLyric
 			}
 		}
 	}
@@ -327,8 +381,11 @@
 				width: 100%;
 				top: 100px;
 				bottom: 160px;
+				white-space: nowrap;
+				font-size: 0;
 				.middle-l {
 					display: inline-block;
+					vertical-align: top;
 					position: relative;
 					width: 100%;
 					height: 0;
@@ -358,6 +415,33 @@
 							.playing {
 								animation: rotate 24s infinite linear;
 							}
+						}
+					}
+				}
+				.middle-r {
+					display: inline-block;
+					vertical-align: top;
+					width: 100%;
+					height: 100%;
+					overflow: hidden;
+					.lyric-wrapper {
+						width: 80%;
+						margin: 0 auto;
+						overflow: hidden;
+						text-align: center;
+						.text {
+							line-height: 32px;
+							color: $color-text-l;
+							font-size: $font-size-medium;
+							&.current {
+								color: $color-text;
+							}
+						}
+						.pure-music {
+							padding-top: 50%;
+							line-height: 32px;
+							color: $color-text-l;
+							font-size: $font-size-medium;
 						}
 					}
 				}
