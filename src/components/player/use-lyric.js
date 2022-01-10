@@ -22,7 +22,7 @@ const useLyric = ({songReady, currentTime}) => {
     if(!listEl) {
       return
     }
-    if(lineNum > 5){
+    if(lineNum > 8){
       const lineEl = listEl.children[lineNum - 8]
       scrollComp.scroll.scrollToElement(lineEl, 1000)
     } else {
@@ -69,7 +69,6 @@ const useLyric = ({songReady, currentTime}) => {
       playingLyric.value = pureMusicLyric.value = lyric.replace(/\[(\d{2}):(\d{2}):(\d{2})\]/g, '')
     }
   })
-  console.log('Line NUM', currentLineNum.value)
 
   return {
     currentLyric,
