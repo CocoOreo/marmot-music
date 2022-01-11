@@ -24,7 +24,6 @@ const lyricMap = {}
 export const getLyric = (song) => {
   const mid = song.mid
   const lyric = lyricMap[mid]
-  console.log("call lyric")
   if(lyric){
     return Promise.resolve(lyric)
   }

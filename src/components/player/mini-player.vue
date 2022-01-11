@@ -44,6 +44,7 @@
 	import { useStore } from 'vuex'
 	import { computed } from 'vue'
 	import ProgressCircle from './progress-circle.vue'
+	import useMiniSlider from './use-mini-slider'
 	import useCd from './use-cd'
 
 	export default {
@@ -64,6 +65,7 @@
 			const playList = computed(() => store.state.playList)
 
 			const { cdCls, cdRef, cdImageRef } = useCd()
+			const { sliderWrapperRef } = useMiniSlider()
 
 			const miniPlayIcon = computed(() => {
 				return playing.value ? 'icon-pause-mini' : 'icon-play-mini'
@@ -82,7 +84,9 @@
 				// cd
 				cdCls,
 				cdRef,
-				cdImageRef
+				cdImageRef,
+				// mini slider
+				sliderWrapperRef
 			}
 		}
 	}
