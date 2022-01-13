@@ -13,6 +13,7 @@
     "better-scroll": "^2.4.2",
     "core-js": "^3.6.5",
     "good-storage": "^1.1.1",
+    "lyric-parser": "^1.0.1",
     "node-sass": "5",
     "pinyin": "^2.10.2",
     "sass-loader": "10.1.1",
@@ -31,10 +32,13 @@
     "@vue/eslint-config-standard": "^5.1.2",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^7.0.0"
+    "eslint-plugin-vue": "^7.0.0",
+    "js-base64": "^3.7.2",
+    "prettier": "^2.5.1"
   }
 }

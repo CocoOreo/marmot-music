@@ -3848,6 +3848,11 @@ escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   resolved "https://registry.nlark.com/escape-string-regexp/download/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
+eslint-config-prettier@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.nlark.com/eslint-config-prettier/download/eslint-config-prettier-8.3.0.tgz#f7471b20b6fe8a9a9254cc684454202886a2dd7a"
+  integrity sha1-90cbILb+ipqSVMxoRFQgKIai3Xo=
+
 eslint-config-standard@^14.1.0:
   version "14.1.1"
   resolved "https://registry.nlark.com/eslint-config-standard/download/eslint-config-standard-14.1.1.tgz?cache=0&sync_timestamp=1621880200361&other_urls=https%3A%2F%2Fregistry.nlark.com%2Feslint-config-standard%2Fdownload%2Feslint-config-standard-14.1.1.tgz#830a8e44e7aef7de67464979ad06b406026c56ea"
@@ -5659,6 +5664,11 @@ js-base64@^2.1.8:
   resolved "https://registry.npmmirror.com/js-base64/download/js-base64-2.6.4.tgz?cache=0&sync_timestamp=1632308301843&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fjs-base64%2Fdownload%2Fjs-base64-2.6.4.tgz#f4e686c5de1ea1f867dbcad3d46d969428df98c4"
   integrity sha1-9OaGxd4eofhn28rT1G2WlCjfmMQ=
 
+js-base64@^3.7.2:
+  version "3.7.2"
+  resolved "https://registry.npmmirror.com/js-base64/download/js-base64-3.7.2.tgz#816d11d81a8aff241603d19ce5761e13e41d7745"
+  integrity sha512-NnRs6dsyqUXejqk/yv2aiXlAvOs56sLkX6nUdeaNezI5LFFLlsZjOThmwnrcwh5ZZRwZlCMnVAY3CvhIhoVEKQ==
+
 js-message@1.0.7:
   version "1.0.7"
   resolved "https://registry.nlark.com/js-message/download/js-message-1.0.7.tgz#fbddd053c7a47021871bb8b2c95397cc17c20e47"
@@ -5998,6 +6008,11 @@ lru-cache@^6.0.0:
   integrity sha1-bW/mVw69lqr5D8rR2vo7JWbbOpQ=
   dependencies:
     yallist "^4.0.0"
+
+lyric-parser@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmmirror.com/lyric-parser/download/lyric-parser-1.0.1.tgz#a1f8aa77653cf947ecf94df51d5f816afc9ed44c"
+  integrity sha1-ofiqd2U8+Ufs+U31HV+Bavye1Ew=
 
 magic-string@^0.25.7:
   version "0.25.7"
@@ -7492,6 +7507,11 @@ prepend-http@^1.0.0:
   version "2.4.1"
   resolved "https://registry.nlark.com/prettier/download/prettier-2.4.1.tgz?cache=0&sync_timestamp=1631777167012&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fprettier%2Fdownload%2Fprettier-2.4.1.tgz#671e11c89c14a4cfc876ce564106c4a6726c9f5c"
   integrity sha1-Zx4RyJwUpM/Ids5WQQbEpnJsn1w=
+
+prettier@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.npmmirror.com/prettier/download/prettier-2.5.1.tgz#fff75fa9d519c54cf0fce328c1017d94546bc56a"
+  integrity sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==
 
 pretty-error@^2.0.2:
   version "2.1.2"

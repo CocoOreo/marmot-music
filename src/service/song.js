@@ -4,7 +4,7 @@ export const processSongs = (songs) => {
     return Promise.resolve(songs)
   }
 
-  return get('/api/getSongsUrl', {
+  return get('/api/getBackUpSongsUrl', {
     mid: songs.map((song) => {
       return song.mid
     })
@@ -16,5 +16,23 @@ export const processSongs = (songs) => {
     }).filter((song) => {
       return song.url && song.url.indexOf('vkey') > -1
     })
+  })
+}
+
+const lyricMap = {}
+
+export const getLyric = (song) => {
+  const mid = song.mid
+  const lyric = lyricMap[mid]
+  if(lyric){
+    return Promise.resolve(lyric)
+  }
+
+  return get('/api/getLyric', {
+    mid
+  }).then((res) => {
+    const lyric = res ? res.lyric : '[00:00:00]Lyrics not showing'
+    lyricMap[mid] = lyric
+    return lyric
   })
 }
