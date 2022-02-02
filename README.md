@@ -16,9 +16,10 @@ A Music App for mobiles based on Vue3
 ![images](https://github.com/CocoOreo/marmot-music/blob/main/screenshots/Player.gif) 
 ![images](https://github.com/CocoOreo/marmot-music/blob/main/screenshots/MiniPlayer.gif)
 <img width="290" src="https://github.com/CocoOreo/marmot-music/blob/main/screenshots/s3.png" />
-
-<img width="290" src="https://github.com/CocoOreo/marmot-music/blob/main/screenshots/s4.png" />
-<img width="290" src="https://github.com/CocoOreo/marmot-music/blob/main/screenshots/s5.png" />
+<div>
+  <img width="290" src="https://github.com/CocoOreo/marmot-music/blob/main/screenshots/s4.png" />
+  <img width="290" src="https://github.com/CocoOreo/marmot-music/blob/main/screenshots/s5.png" />
+</div>
 
 ## Project setup
 ```
