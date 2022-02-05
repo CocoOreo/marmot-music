@@ -27,6 +27,14 @@ A Music App for mobiles based on Vue3
   <img width="200" src="https://github.com/CocoOreo/marmot-music/blob/main/screenshots/s5.png" />
 </div>
 
+### Feature
+- [x] Browse Songs, Albums, Artists
+- [x] Index fixed bar
+- [x] playlists
+- [x] Change play mode
+- [x] Transition and Animation
+- [x] Lyrics support
+- [x] ...
 ## Project setup
 ```
 yarn install
